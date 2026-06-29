@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recomp Tracker</title>
+<meta name="theme-color" content="#0f0f0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Recomp">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
   :root{--bg:#0f0f0f;--surface:#181818;--surface2:#222222;--border:#2a2a2a;--accent:#c8f542;--red:#ff4d4d;--orange:#ff8c42;--text:#f0f0f0;--text-muted:#888;--text-dim:#555;}
@@ -168,6 +175,9 @@
   .form-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:14px;padding:10px 12px;outline:none;transition:border-color .2s;width:100%;}
   .form-input:focus{border-color:var(--accent);}
   .btn-primary{width:100%;padding:12px;background:var(--accent);color:#0f0f0f;border:none;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+  .btn-secondary{flex:1;padding:11px 8px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+  .btn-secondary:active{opacity:.8;}
+  .overload-hint{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface2);padding:4px 14px;border-bottom:1px solid var(--border);}
   .history-table{width:100%;border-collapse:collapse;}
   .history-table th{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;padding:8px 6px;text-align:left;border-bottom:1px solid var(--border);font-weight:600;}
   .history-table td{font-family:'Space Mono',monospace;font-size:12px;padding:10px 6px;border-bottom:1px solid var(--border);color:var(--text-muted);}
@@ -194,6 +204,20 @@
   .modal-btns{display:flex;gap:8px;}
   .btn-secondary{flex:1;padding:10px;background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
   .btn-accent{flex:1;padding:10px;background:var(--accent);color:#0f0f0f;border:none;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+  /* ── EXERCISE PICKER ── */
+  .picker-search{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:13px;padding:9px 12px;outline:none;margin-bottom:10px;transition:border-color .2s;}
+  .picker-search:focus{border-color:var(--accent);}
+  .picker-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px;margin-bottom:6px;}
+  .picker-chips::-webkit-scrollbar{display:none;}
+  .picker-chip{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text-muted);font-size:11px;font-weight:600;padding:5px 12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .15s;}
+  .picker-chip.active{background:var(--accent);color:#0f0f0f;border-color:var(--accent);}
+  .picker-list{max-height:46vh;overflow-y:auto;border-top:1px solid var(--border);margin-bottom:10px;}
+  .picker-row{display:flex;justify-content:space-between;align-items:center;padding:11px 4px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+  .picker-row:hover{background:var(--surface2);}
+  .picker-name{font-size:13px;font-weight:600;}
+  .picker-muscle{font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace;margin-top:2px;}
+  .picker-add-ic{font-size:18px;font-weight:700;color:var(--accent);flex-shrink:0;padding-left:10px;}
+  .picker-custom{display:flex;gap:8px;}
 
   .info-box{background:#c8f54210;border:1px solid #c8f54230;border-radius:10px;padding:12px 14px;margin-bottom:12px;}
   .info-box p{font-size:12px;color:var(--accent);line-height:1.6;}
@@ -308,9 +332,10 @@
   <div class="section-label">Catat Progress</div>
   <div class="progress-form">
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Berat (kg)</label><input type="number" class="form-input" id="inputBB" placeholder="81.0" step="0.1"></div>
-      <div class="form-group"><label class="form-label">Catatan</label><input type="text" class="form-input" id="inputNote" placeholder="Perasaan hari ini..."></div>
+      <div class="form-group"><label class="form-label">Berat (kg)</label><input type="text" inputmode="decimal" class="form-input" id="inputBB" placeholder="81.0"></div>
+      <div class="form-group"><label class="form-label">Pinggang (cm)</label><input type="text" inputmode="decimal" class="form-input" id="inputPinggang" placeholder="90"></div>
     </div>
+    <div class="form-group" style="margin-bottom:10px;"><label class="form-label">Catatan</label><input type="text" class="form-input" id="inputNote" placeholder="Perasaan hari ini..."></div>
     <button class="btn-primary" onclick="saveProgress()">Simpan Progress</button>
   </div>
   <div class="section-label">Grafik Berat</div>
@@ -327,14 +352,24 @@
     </div>
     <div class="stat-card"><div class="stat-label">Berat Sekarang</div><div class="stat-value" id="statBBNow">—<span class="stat-unit">kg</span></div><div class="stat-change" id="statBBChange"></div></div>
     <div class="stat-card"><div class="stat-label">Terendah</div><div class="stat-value" id="statBBLow">—<span class="stat-unit">kg</span></div></div>
+    <div class="stat-card"><div class="stat-label">Pinggang Skrg</div><div class="stat-value" id="statPinggang">—<span class="stat-unit">cm</span></div><div class="stat-change" id="statPinggangChange"></div></div>
     <div class="stat-card"><div class="stat-label">Sesi Gym Total</div><div class="stat-value" id="statGym">0</div></div>
   </div>
   <div class="section-label">Riwayat</div>
   <div class="card">
     <table class="history-table">
-      <thead><tr><th>Tanggal</th><th>BB</th><th>Catatan</th><th></th></tr></thead>
-      <tbody id="historyBody"><tr><td colspan="4" style="color:var(--text-dim);text-align:center;padding:20px;">Belum ada data</td></tr></tbody>
+      <thead><tr><th>Tanggal</th><th>BB</th><th>Pinggang</th><th>Catatan</th><th></th></tr></thead>
+      <tbody id="historyBody"><tr><td colspan="5" style="color:var(--text-dim);text-align:center;padding:20px;">Belum ada data</td></tr></tbody>
     </table>
+  </div>
+  <div class="section-label">Backup Data</div>
+  <div class="card">
+    <p style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;">Data tersimpan di browser ini saja. Export rutin agar tidak hilang saat ganti HP atau hapus cache.</p>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-secondary" onclick="exportData()">⬇ Export JSON</button>
+      <button class="btn-secondary" onclick="document.getElementById('importFile').click()">⬆ Import JSON</button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(this)">
+    </div>
   </div>
 </div>
 
@@ -379,6 +414,23 @@
     <div class="modal-btns">
       <button class="btn-secondary" onclick="closeTimelineModal()">Batal</button>
       <button class="btn-accent" onclick="saveTimelineModal()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Exercise Picker -->
+<div class="modal-overlay hidden" id="exercisePickerModal">
+  <div class="modal" style="max-width:400px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="modal-title" style="margin:0;">Pilih Gerakan</div>
+      <button class="tl-btn" style="font-size:18px;" onclick="closeExercisePicker()">✕</button>
+    </div>
+    <input class="picker-search" id="pickerSearch" placeholder="Cari gerakan..." oninput="renderPickerList()">
+    <div class="picker-chips" id="pickerChips"></div>
+    <div class="picker-list" id="pickerList"></div>
+    <div class="picker-custom">
+      <input class="add-item-input" id="pickerCustomName" placeholder="Atau ketik gerakan sendiri..." onkeydown="if(event.key==='Enter')addCustomFromPicker()">
+      <button class="add-item-btn" onclick="addCustomFromPicker()">+</button>
     </div>
   </div>
 </div>
@@ -463,6 +515,55 @@ let state = {
 };
 
 function saveState() { try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch(e) {} }
+
+// Progressive overload: sesi terakhir utk gerakan (ei) bertipe sama, sebelum tanggal ini
+function lastSessionHint(dayType, ei, currentISO) {
+  const dayIdxs = [];
+  state.weekSchedule.forEach((sc,i) => { if (sc.type === dayType) dayIdxs.push(i); });
+  const byDate = {};
+  for (const k in state.logData) {
+    const m = k.match(/^(\d{4}-\d{2}-\d{2})_d(\d+)_(\d+)_(\d+)$/);
+    if (!m) continue;
+    const iso = m[1], idx = parseInt(m[2]), e = parseInt(m[3]), sIdx = parseInt(m[4]);
+    if (e !== ei || !dayIdxs.includes(idx) || iso >= currentISO) continue;
+    const rec = state.logData[k];
+    if (rec && (rec.kg || rec.rep)) (byDate[iso] = byDate[iso] || []).push({ s:sIdx, kg:rec.kg, rep:rec.rep });
+  }
+  const dates = Object.keys(byDate).sort();
+  if (!dates.length) return '';
+  const last = dates[dates.length-1];
+  const txt = byDate[last].sort((a,b)=>a.s-b.s).map(x=>`${x.kg||'?'}×${x.rep||'?'}`).join('  ');
+  return txt ? `Terakhir (${last.slice(5)}): ${txt}` : '';
+}
+
+// Backup: export & import seluruh data sbg JSON
+function exportData() {
+  try {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'recomp-backup-' + TODAY_DATE + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url); showToast();
+  } catch(e) { alert('Gagal export.'); }
+}
+function importData(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data || typeof data !== 'object' || !('progressHistory' in data)) throw new Error('format');
+      if (!confirm('Ganti SEMUA data saat ini dengan isi file backup ini?')) { input.value=''; return; }
+      state = { ...state, ...data };
+      saveState();
+      location.reload();
+    } catch(e) { alert('File backup tidak valid.'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
 
 function loadState() {
   try {
@@ -889,7 +990,8 @@ function renderExercises(dayIdx) {
   if (logEditMode) {
     const addRow = document.createElement('div');
     addRow.className = 'add-exercise-row';
-    addRow.innerHTML = `<input class="add-ex-input" id="newExName" placeholder="Nama gerakan baru..."><button class="add-ex-btn" onclick="addExercise('${dayType}')">+</button>`;
+    addRow.style.cssText = 'border:none;padding:0;background:none;';
+    addRow.innerHTML = `<button class="add-set-btn" style="width:100%;" onclick="openExercisePicker('${dayType}')">+ Pilih / Tambah Gerakan</button>`;
     wrap.appendChild(addRow);
   }
 }
@@ -925,16 +1027,20 @@ function buildExerciseBlock(ex, ei, dateKey, dayType) {
     const targetSpan = document.createElement('span');
     targetSpan.className = 'exercise-target';
     targetSpan.textContent = ex.target;
-    const delBtn = document.createElement('button');
-    delBtn.className = 'ex-del-always';
-    delBtn.textContent = '🗑';
-    delBtn.title = 'Hapus gerakan';
-    delBtn.onclick = (e) => { e.stopPropagation(); deleteExercise(dayType, ei); };
     header.appendChild(nameSpan);
     header.appendChild(targetSpan);
-    header.appendChild(delBtn);
   }
   block.appendChild(header);
+
+  if (!logEditMode) {
+    const hintTxt = lastSessionHint(dayType, ei, dateKey.split('_d')[0]);
+    if (hintTxt) {
+      const hint = document.createElement('div');
+      hint.className = 'overload-hint';
+      hint.textContent = '↗ ' + hintTxt;
+      block.appendChild(hint);
+    }
+  }
 
   const setHeader = document.createElement('div');
   setHeader.className = 'set-row' + (logEditMode ? ' edit-mode' : '');
@@ -964,7 +1070,7 @@ function buildSetRow(ex, ei, s, dateKey, dayType) {
   row.className = 'set-row' + (logEditMode ? ' edit-mode' : '');
   row.innerHTML = `
     <div class="set-num">${s + 1}</div>
-    <div class="input-group"><input type="number" class="set-input" placeholder="—" value="${saved.kg||''}" onchange="saveLog('${key}','kg',this.value)" inputmode="decimal"></div>
+    <div class="input-group"><input type="text" class="set-input" placeholder="—" value="${saved.kg||''}" onchange="saveLog('${key}','kg',this.value)" inputmode="decimal"></div>
     <div class="input-group"><input type="number" class="set-input" placeholder="—" value="${saved.rep||''}" onchange="saveLog('${key}','rep',this.value)" inputmode="numeric"></div>
     <button class="set-done ${saved.done?'completed':''}" onclick="toggleSetDone('${key}',this)">${saved.done?'✓ Done':'Done'}</button>
     ${logEditMode?`<button class="del-set-btn" onclick="deleteSet('${dayType}',${ei},${s})">✕</button>`:''}
@@ -972,28 +1078,35 @@ function buildSetRow(ex, ei, s, dateKey, dayType) {
   return row;
 }
 
-function saveLog(key, field, value) { if(!state.logData[key])state.logData[key]={}; state.logData[key][field]=value; saveState(); showToast(); }
+function saveLog(key, field, value) { if(field==='kg') value = String(value).replace(',', '.'); if(!state.logData[key])state.logData[key]={}; state.logData[key][field]=value; saveState(); showToast(); }
 
 function toggleSetDone(key, btn) {
   if(!state.logData[key])state.logData[key]={};
   state.logData[key].done = !state.logData[key].done;
   btn.textContent = state.logData[key].done ? '✓ Done' : 'Done';
   btn.classList.toggle('completed', state.logData[key].done);
+  updateGymCount();
   saveState(); showToast();
 }
 
-function addExercise(dayType) {
-  const input = document.getElementById('newExName');
-  const name = input ? input.value.trim() : '';
-  if (!name) { input&&input.focus(); return; }
-  ensureCustomExercises(dayType);
-  state.customExercises[dayType].push({ name, target:'3×8–12', sets:3 });
-  saveState(); renderExercises(logDayIdx); showToast();
-}
-
 function deleteExercise(dayType, ei) {
+  if (!confirm('Hapus gerakan ini? Data set yang sudah tercatat untuk gerakan ini akan ikut terhapus.')) return;
   ensureCustomExercises(dayType);
   state.customExercises[dayType].splice(ei, 1);
+  // Reindex logData so set data untuk gerakan setelahnya tidak salah-geser (key memakai posisi)
+  const dayIdxs = [];
+  state.weekSchedule.forEach((sc, i) => { if (sc.type === dayType) dayIdxs.push(i); });
+  const nd = {};
+  for (const k in state.logData) {
+    const m = k.match(/^(\d{4}-\d{2}-\d{2})_d(\d+)_(\d+)_(\d+)$/);
+    if (!m) { nd[k] = state.logData[k]; continue; }
+    const iso = m[1], idx = +m[2], e = +m[3], sIdx = +m[4];
+    if (!dayIdxs.includes(idx)) { nd[k] = state.logData[k]; continue; }
+    if (e === ei) continue;                 // buang data gerakan yg dihapus
+    const ne = e > ei ? e - 1 : e;          // geser turun index setelahnya
+    nd[`${iso}_d${idx}_${ne}_${sIdx}`] = state.logData[k];
+  }
+  state.logData = nd;
   saveState(); renderExercises(logDayIdx); showToast();
 }
 
@@ -1002,14 +1115,98 @@ function deleteSet(dayType, ei, setIdx) {
   const ex = state.customExercises[dayType][ei];
   if (ex.sets <= 1) return;
   ex.sets -= 1;
-  const dates = getWeekDates(logWeekOffset);
-  const dateKey = isoDate(dates[logDayIdx]) + '_d' + logDayIdx;
-  delete state.logData[`${dateKey}_${ei}_${setIdx}`];
-  for (let s = setIdx + 1; s <= ex.sets; s++) {
-    const ok = `${dateKey}_${ei}_${s}`, nk = `${dateKey}_${ei}_${s-1}`;
-    if (state.logData[ok]) { state.logData[nk] = state.logData[ok]; delete state.logData[ok]; }
+  const dayIdxs = [];
+  state.weekSchedule.forEach((sc, i) => { if (sc.type === dayType) dayIdxs.push(i); });
+  const nd = {};
+  for (const k in state.logData) {
+    const m = k.match(/^(\d{4}-\d{2}-\d{2})_d(\d+)_(\d+)_(\d+)$/);
+    if (!m) { nd[k] = state.logData[k]; continue; }
+    const iso = m[1], idx = +m[2], e = +m[3], sIdx = +m[4];
+    if (!dayIdxs.includes(idx) || e !== ei) { nd[k] = state.logData[k]; continue; }
+    if (sIdx === setIdx) continue;                 // hapus set ini
+    const ns = sIdx > setIdx ? sIdx - 1 : sIdx;    // geser set setelahnya, semua tanggal
+    nd[`${iso}_d${idx}_${e}_${ns}`] = state.logData[k];
   }
+  state.logData = nd;
   saveState(); renderExercises(logDayIdx);
+}
+
+// ══════════════════════════════════════════════════════
+// EXERCISE PICKER (library + search + muscle filter)
+// ══════════════════════════════════════════════════════
+const MUSCLE_GROUPS = ['Semua','Dada','Punggung','Bahu','Lengan','Kaki','Core'];
+const EXERCISE_LIBRARY = [
+  {name:'Bench Press',m:'Dada'},{name:'Incline Bench Press',m:'Dada'},{name:'Incline DB Press',m:'Dada'},{name:'Dumbbell Press',m:'Dada'},{name:'Chest Fly',m:'Dada'},{name:'Cable Crossover',m:'Dada'},{name:'Push Up',m:'Dada'},{name:'Dips',m:'Dada'},
+  {name:'Pull Up',m:'Punggung'},{name:'Lat Pulldown',m:'Punggung'},{name:'Barbell Row',m:'Punggung'},{name:'Cable Row',m:'Punggung'},{name:'Dumbbell Row',m:'Punggung'},{name:'T-Bar Row',m:'Punggung'},{name:'Face Pull',m:'Punggung'},{name:'Deadlift',m:'Punggung'},
+  {name:'Overhead Press',m:'Bahu'},{name:'DB Shoulder Press',m:'Bahu'},{name:'Lateral Raise',m:'Bahu'},{name:'Front Raise',m:'Bahu'},{name:'Rear Delt Fly',m:'Bahu'},{name:'Arnold Press',m:'Bahu'},{name:'Upright Row',m:'Bahu'},
+  {name:'Barbell Curl',m:'Lengan'},{name:'Dumbbell Curl',m:'Lengan'},{name:'Hammer Curl',m:'Lengan'},{name:'Preacher Curl',m:'Lengan'},{name:'Tricep Pushdown',m:'Lengan'},{name:'Skull Crusher',m:'Lengan'},{name:'Overhead Tricep Ext',m:'Lengan'},{name:'Cable Curl',m:'Lengan'},
+  {name:'Squat',m:'Kaki'},{name:'Front Squat',m:'Kaki'},{name:'Leg Press',m:'Kaki'},{name:'Romanian Deadlift',m:'Kaki'},{name:'Bulgarian Split Squat',m:'Kaki'},{name:'Lunge',m:'Kaki'},{name:'Leg Curl',m:'Kaki'},{name:'Leg Extension',m:'Kaki'},{name:'Calf Raise',m:'Kaki'},{name:'Hip Thrust',m:'Kaki'},
+  {name:'Plank',m:'Core'},{name:'Hanging Leg Raise',m:'Core'},{name:'Cable Crunch',m:'Core'},{name:'Russian Twist',m:'Core'},{name:'Ab Wheel',m:'Core'},{name:'Mountain Climber',m:'Core'},
+];
+let pickerDayType = null;
+let pickerFilter = 'Semua';
+
+function openExercisePicker(dayType) {
+  pickerDayType = dayType;
+  pickerFilter = 'Semua';
+  document.getElementById('pickerSearch').value = '';
+  document.getElementById('pickerCustomName').value = '';
+  renderPickerChips();
+  renderPickerList();
+  document.getElementById('exercisePickerModal').classList.remove('hidden');
+}
+
+function closeExercisePicker() {
+  document.getElementById('exercisePickerModal').classList.add('hidden');
+  pickerDayType = null;
+}
+
+function renderPickerChips() {
+  const wrap = document.getElementById('pickerChips');
+  wrap.innerHTML = '';
+  MUSCLE_GROUPS.forEach(g => {
+    const b = document.createElement('button');
+    b.className = 'picker-chip' + (g === pickerFilter ? ' active' : '');
+    b.textContent = g;
+    b.onclick = () => { pickerFilter = g; renderPickerChips(); renderPickerList(); };
+    wrap.appendChild(b);
+  });
+}
+
+function renderPickerList() {
+  const q = (document.getElementById('pickerSearch').value || '').toLowerCase().trim();
+  const list = document.getElementById('pickerList');
+  list.innerHTML = '';
+  const existing = new Set((getExercisesForType(pickerDayType) || []).map(e => e.name.toLowerCase()));
+  const items = EXERCISE_LIBRARY.filter(e => (pickerFilter === 'Semua' || e.m === pickerFilter) && e.name.toLowerCase().includes(q));
+  if (!items.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:16px;font-size:12px;">Tidak ada di daftar. Ketik di bawah untuk buat custom.</div>';
+    return;
+  }
+  items.forEach(e => {
+    const added = existing.has(e.name.toLowerCase());
+    const row = document.createElement('div');
+    row.className = 'picker-row';
+    row.innerHTML = `<div><div class="picker-name" style="${added ? 'color:var(--text-dim);' : ''}">${e.name}</div><div class="picker-muscle">${e.m}</div></div><div class="picker-add-ic">${added ? '✓' : '+'}</div>`;
+    row.onclick = () => pickExercise(e.name);
+    list.appendChild(row);
+  });
+}
+
+function pickExercise(name) {
+  if (!pickerDayType) return;
+  ensureCustomExercises(pickerDayType);
+  if (state.customExercises[pickerDayType].some(e => e.name.toLowerCase() === name.toLowerCase())) { showToast(); return; }
+  state.customExercises[pickerDayType].push({ name, target:'3×8–12', sets:3 });
+  saveState(); renderPickerList(); renderExercises(logDayIdx); showToast();
+}
+
+function addCustomFromPicker() {
+  const inp = document.getElementById('pickerCustomName');
+  const name = inp.value.trim();
+  if (!name) return;
+  pickExercise(name);
+  inp.value = '';
 }
 
 // ══════════════════════════════════════════════════════
@@ -1138,29 +1335,31 @@ function editGymTarget() {
   input.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); guard(commit)(); } if (e.key === 'Escape') { input.value = current; guard(commit)(); } };
 }
 
+// Sesi gym = tanggal dgn minimal 1 set ditandai Done, atau checklist gym dicentang
+function gymSessionDates() {
+  const dates = new Set();
+  for (const k in state.logData) { if (state.logData[k] && state.logData[k].done) dates.add(k.split('_d')[0]); }
+  for (const k in state.checklistDone) { if (state.checklistDone[k] && /_gym$/.test(k)) dates.add(k.replace(/_gym$/, '')); }
+  return dates;
+}
+function countGymSessions() { return gymSessionDates().size; }
+
 function renderGymDots() {
   const wrap = document.getElementById('gymDots');
   wrap.innerHTML = '';
   const todayIdx = dayOfWeek();
-  // show all 7 days now
-  for (let d = 0; d < 7; d++) {
-    const sched = state.weekSchedule[d];
-    if (sched.type === 'REST') return; // stop at first rest... actually show all active days
-    const dot = document.createElement('div');
-    dot.className = 'week-dot' + (state.checklistDone[`${TODAY_DATE}_gym_${d}`] ? ' done' : '') + (d === todayIdx ? ' today' : '');
-    wrap.appendChild(dot);
-  }
-  // Rebuild: show dots only for non-rest days
-  wrap.innerHTML = '';
+  const weekDates = getWeekDates(0);
+  const done = gymSessionDates();
   for (let d = 0; d < 7; d++) {
     if (state.weekSchedule[d].type === 'REST') continue;
+    const iso = isoDate(weekDates[d]);
     const dot = document.createElement('div');
-    dot.className = 'week-dot' + (state.checklistDone[`${TODAY_DATE}_gym_${d}`] ? ' done' : '') + (d === todayIdx ? ' today' : '');
+    dot.className = 'week-dot' + (done.has(iso) ? ' done' : '') + (d === todayIdx ? ' today' : '');
     wrap.appendChild(dot);
   }
 }
 
-function updateGymCount() { renderGymDots(); document.getElementById('statGym').textContent = state.progressHistory.length; }
+function updateGymCount() { renderGymDots(); const el=document.getElementById('statGym'); if(el) el.textContent = countGymSessions(); }
 
 // ══════════════════════════════════════════════════════
 // TIPS & MOTIVASI
@@ -1316,6 +1515,29 @@ function renderWeightChart() {
     ctx.stroke();
   });
 
+  // 7-day moving average trend line (recomp: meredam noise berat harian)
+  const parseID = str => { const p = (str || '').split('/'); return p.length >= 3 ? new Date(+p[2], +p[1]-1, +p[0]).getTime() : NaN; };
+  const ts = history.map(h => parseID(h.date));
+  if (ts.every(t => !isNaN(t))) {
+    const DAY = 86400000;
+    const avg = vals.map((_, i) => {
+      let sum = 0, n = 0;
+      for (let j = 0; j <= i; j++) { if (ts[i] - ts[j] <= 6 * DAY && ts[j] <= ts[i]) { sum += vals[j]; n++; } }
+      return sum / n;
+    });
+    ctx.beginPath();
+    ctx.strokeStyle = '#ff8c42';
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.moveTo(toX(0), toY(avg[0]));
+    for (let i = 1; i < avg.length; i++) ctx.lineTo(toX(i), toY(avg[i]));
+    ctx.stroke();
+    ctx.textAlign = 'left';
+    ctx.font = `9px 'Space Grotesk', sans-serif`;
+    ctx.fillStyle = '#c8f542'; ctx.fillText('\u25cf berat', pad.left + 2, pad.top - 4);
+    ctx.fillStyle = '#ff8c42'; ctx.fillText('\u25cf tren 7-hari', pad.left + 54, pad.top - 4);
+  }
+
   // X-axis labels (show first, last, and a few middle)
   ctx.fillStyle = '#555';
   ctx.font = `9px 'Space Mono', monospace`;
@@ -1333,11 +1555,13 @@ function renderWeightChart() {
 // PROGRESS
 // ══════════════════════════════════════════════════════
 function saveProgress() {
-  const bb = document.getElementById('inputBB').value;
+  const bb = document.getElementById('inputBB').value.replace(',', '.');
+  const pinggang = document.getElementById('inputPinggang').value.replace(',', '.');
   const note = document.getElementById('inputNote').value;
-  if (!bb) { alert('Masukkan berat badan dulu'); return; }
-  state.progressHistory.unshift({ date:new Date().toLocaleDateString('id-ID'), bb:parseFloat(bb), note:note||'—' });
+  if (!bb || isNaN(parseFloat(bb))) { alert('Masukkan berat badan yang valid'); return; }
+  state.progressHistory.unshift({ date:new Date().toLocaleDateString('id-ID'), bb:parseFloat(bb), pinggang: pinggang?parseFloat(pinggang):null, note:note||'—' });
   document.getElementById('inputBB').value = '';
+  document.getElementById('inputPinggang').value = '';
   document.getElementById('inputNote').value = '';
   saveState(); loadProgress(); showToast();
 }
@@ -1359,11 +1583,24 @@ function loadProgress() {
     const minBB = Math.min(...history.map(h => h.bb));
     const lowEl = document.getElementById('statBBLow');
     if (lowEl) lowEl.innerHTML = `${minBB}<span class="stat-unit">kg</span>`;
+    // Waist (lingkar pinggang)
+    const waistVals = history.filter(h => h.pinggang != null);
+    const pEl = document.getElementById('statPinggang');
+    const pChange = document.getElementById('statPinggangChange');
+    if (waistVals.length > 0) {
+      const latestW = waistVals[0].pinggang;
+      pEl.innerHTML = `${latestW}<span class="stat-unit">cm</span>`;
+      const firstW = waistVals[waistVals.length-1].pinggang;
+      const wd = (latestW - firstW).toFixed(1);
+      if (wd < 0) { pChange.textContent = wd+'cm dari awal'; pChange.className='stat-change pos'; }
+      else if (wd > 0) { pChange.textContent = '+'+wd+'cm dari awal'; pChange.className='stat-change neg'; }
+      else { pChange.textContent=''; pChange.className='stat-change'; }
+    } else if (pEl) { pEl.innerHTML = `—<span class="stat-unit">cm</span>`; }
   }
-  document.getElementById('statGym').textContent = history.length;
+  document.getElementById('statGym').textContent = countGymSessions();
   const tbody = document.getElementById('historyBody');
-  if (history.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-dim);text-align:center;padding:20px;">Belum ada data</td></tr>'; return; }
-  tbody.innerHTML = history.map((h,i) => `<tr><td>${h.date}</td><td style="color:var(--text)">${h.bb}kg</td><td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.note}</td><td><button class="del-btn" onclick="deleteProgress(${i})">✕</button></td></tr>`).join('');
+  if (history.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-dim);text-align:center;padding:20px;">Belum ada data</td></tr>'; return; }
+  tbody.innerHTML = history.map((h,i) => `<tr><td>${h.date}</td><td style="color:var(--text)">${h.bb}kg</td><td>${h.pinggang!=null?h.pinggang+'cm':'—'}</td><td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.note}</td><td><button class="del-btn" onclick="deleteProgress(${i})">✕</button></td></tr>`).join('');
   renderWeightChart();
 }
 
@@ -1405,6 +1642,14 @@ function showToast() {
 
 document.getElementById('editItemModal').addEventListener('click', function(e) { if(e.target===this) closeEditModal(); });
 document.getElementById('editTimelineModal').addEventListener('click', function(e) { if(e.target===this) closeTimelineModal(); });
+document.getElementById('exercisePickerModal').addEventListener('click', function(e) { if(e.target===this) closeExercisePicker(); });
+
+// ══════════════════════════════════════════════════════
+// PWA: service worker (offline + installable)
+// ══════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 
 // ══════════════════════════════════════════════════════
 // START
